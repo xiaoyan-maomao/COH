@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    kotlin("plugin.serialization") version "2.3.0"
 }
 
 kotlin {
@@ -16,7 +17,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -26,20 +27,20 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     js {
         browser()
         binaries.executable()
     }
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         binaries.executable()
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -54,13 +55,31 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.10.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.9.0")
+            implementation("org.jetbrains.androidx.navigation3:navigation3-ui:1.0.0-alpha05")
+            implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3:2.10.0-alpha05")
+            implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation3:1.3.0-alpha02")
+
+            val ktorVersion = "3.4.0"
+            implementation("io.ktor:ktor-client-core:$ktorVersion")
+            implementation("io.ktor:ktor-client-cio:$ktorVersion")
+            // 可选：进度监听/日志
+            implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
         jvmMain.dependencies {
+            implementation(libs.compose.components.resources)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+        }
+        webMain.dependencies {
+            implementation("com.github.terrakok:navigation3-browser:0.2.0")
         }
     }
 }
@@ -101,9 +120,32 @@ compose.desktop {
         mainClass = "com.rederx.application.coh.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.rederx.application.coh"
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Pkg,
+                TargetFormat.Exe,
+                TargetFormat.Msi,
+                TargetFormat.Deb,
+                TargetFormat.AppImage,
+                TargetFormat.Rpm
+            )
+            packageName = "COH"
             packageVersion = "1.0.0"
+            vendor = "xiaoyanmaomao"
+
+            windows {
+                menuGroup = "COH"
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/icon_windows.ico"))
+            }
+
+            linux {
+                menuGroup = "COH"
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/icon_main.png"))
+            }
+
+            macOS {
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/icon_apple.icns"))
+            }
         }
     }
 }
