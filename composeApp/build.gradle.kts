@@ -62,6 +62,7 @@ kotlin {
             implementation("org.jetbrains.androidx.navigation3:navigation3-ui:1.0.0-alpha05")
             implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3:2.10.0-alpha05")
             implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation3:1.3.0-alpha02")
+            implementation("org.eclipse.jgit:org.eclipse.jgit:6.9.0.202403050737-r")
 
             val ktorVersion = "3.4.0"
             implementation("io.ktor:ktor-client-core:$ktorVersion")
